@@ -1,0 +1,161 @@
+---
+title: "Assignment V: GitHub and the ticketmaster.com API (R)"
+subtitle: "Data Science Project Management (DS400) | Winter Term 2022/23"
+author: "Submitted by Jakob Zgonc (6293178)"
+date: "Submitted on `r format(Sys.time(), '%d.%m.%Y')`"
+output:
+  bookdown::html_document2:
+    toc: yes
+    number_sections: TRUE
+    toc_float:
+      collapsed: yes
+---
+
+```{r setup, include = F}
+options(scipen=999)
+
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+
+# clear work space
+rm(list = ls())
+
+```
+
+<!-- some styling -->
+
+```{css, echo=FALSE}
+
+.title {font-weight: bold}
+
+.author {padding-top: 50px;}
+
+.author, .date {
+  color: #708090;
+  font-size: 17px;
+  font-style: italic;
+}
+
+h1 {margin-top: 35px}
+
+div.task {
+  background-color:#DAE3F3;
+  color: #337AB7; /*  #002060;*/
+  border-radius: 10px; 
+  padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 0px;
+  margin-right: 0px;
+  font-size: 15px;
+  border-left: 10px solid #337AB7;
+
+}
+
+body .main-container {
+  max-width: 1280px;
+}
+
+```
+
+***
+
+<br>
+
+#### **Code of conduct**{.unnumbered}
+*I hereby acknowledge that the submitted assignment is my own work. During the preparation of this assignment I have worked together with Max Mohr and Felix Koehn.*
+
+***
+
+This document is also available in [this GitHub repository](https://github.com/jzgonc/dspm_2022_assignment_5).
+
+# Interacting with the API - the basics
+
+<div class="task">
+7. Perform a first `GET` request, that searches for event venues in Germany (`countryCode = "DE"`). Extract the content from the response object and inspect the resulting list. Describe what you can see.
+</div>
+
+```{r libraries}
+
+# load libraries
+
+
+```
+
+```{r func_print_df}
+
+# function to display a data frame more appealingly
+print_df <- function(df, n = 10, scrollbox = FALSE) {
+  
+  # styling
+  df_formatted <- df %>% 
+    head(n = n) %>% 
+    kbl() %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed")) 
+  
+  # scrollbox
+  if (scrollbox) {
+    df_formatted <- df_formatted %>%  
+    scroll_box(width = "100%")
+  }
+  
+  # show data frame
+  df_formatted
+}
+
+```
+
+<div class="task">
+8. Extract the `name`, the `city`, the `postalCode` and `address`, as well as the `url` and the `longitude` and `latitude` of the `venues` to a data frame. This data frame should have the following structure:
+```
+## Rows: 20
+## Columns: 7
+## $ name       <chr> "Gruenspan", "Huxleys Neue Welt", "Kleine Olympiahalle", "Z~
+## $ city       <chr> "Hamburg", "Berlin", "Munich", "Emmelshausen", "Mülheim", "~
+## $ postalCode <dbl> 22767, 10967, 80809, 56281, 45479, 76646, 68766, 44263, 542~
+## $ address    <chr> "Grosse Freiheit 58", "Hasenheide 107 – 113", "Spiridon-Lou~
+## $ url        <chr> "http://www.ticketmaster.de/venue/287155", "http://www.tick~
+## $ longitude  <dbl> 9.958075, 13.421380, 11.550920, 7.556560, 6.874710, 8.59908~
+## $ latitude   <dbl> 53.55188, 52.48639, 48.17543, 50.15544, 51.42778, 49.12692,~
+```
+</div>
+
+
+# Interacting with the API - advanced
+
+<div class="task">
+9. Have a closer look at the list element named `page`. Did your `GET` request from exercise (7) return *all* event locations in Germany? Obviously not - there are of course much more venues in Germany than those contained in this list. Your `GET` request only yielded the first results page containing the first 20 out of several thousands of venues. Check the API documentation under the section [Venue Search](https://developer.ticketmaster.com/products-and-docs/apis/discovery-api/v2/#search-venues-v2). How can you request the venues from the remaining results pages? Iterate over the results pages and perform `GET` requests for all venues in Germany. After each iteration, extract the seven variables `name`, `city`, `postalCode`, `address`, `url`, `longitude`, and `latitude`. Join the information in one large data frame. Print the first 10 rows and the shape of the resulting data frame. The resulting data frame should look something like this (note that the exact number of search results may have changed since this document has been last modified):
+```
+## Rows: 12,671
+## Columns: 7
+## $ name       <chr> "Gruenspan", "Huxleys Neue Welt", "Kleine Olympiahalle", "Z~
+## $ city       <chr> "Hamburg", "Berlin", "Munich", "Emmelshausen", "Mülheim", "~
+## $ postalCode <dbl> 22767, 10967, 80809, 56281, 45479, 76646, 68766, 44263, 542~
+## $ address    <chr> "Grosse Freiheit 58", "Hasenheide 107 – 113", "Spiridon-Lou~
+## $ url        <chr> "http://www.ticketmaster.de/venue/287155", "http://www.tick~
+## $ longitude  <dbl> 9.958075, 13.421380, 11.550920, 7.556560, 6.874710, 8.59908~
+## $ latitude   <dbl> 53.55188, 52.48639, 48.17543, 50.15544, 51.42778, 49.12692,~
+```
+
+</div>
+
+# Visualizing the extracted data
+
+<div class="task">
+10. Below, you can find code that produces a map of Germany. Add points to the map indicating the locations of the event venues across Germany.
+</div>
+
+<div class="task">
+11. You will find that some coordinates lie way beyond the German borders and can be assumed to be faulty. Set coordinate values to `NA` where the value of `longitude` is outside the range (`5.866, 15.042`) or where the value of `latitude` is outside the range (`47.270, 55.059`) (these coordinate ranges have been derived from the extreme points of Germany as listed on Wikipedia (see [here](https://en.wikipedia.org/wiki/Geography_of_Germany#Extreme_points)). For extreme points of other countries, see [here](https://en.wikipedia.org/wiki/Lists_of_extreme_points#Sovereign_states)).
+</div>
+
+# Event locations in other countries
+
+<div class="task">
+12. Repeat exercises (9)–(11) for another European country of your choice. (Hint: Clean code pays off! If you have coded the exercises efficiently, only very few adaptions need to be made.)
+</div>
+
+
+
+<br>
+
+***
