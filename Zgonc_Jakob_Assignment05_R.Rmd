@@ -211,6 +211,112 @@ lapply(venues_DE_first_page[["_embedded"]][["venues"]], simplify_list) %>%
 
 </div>
 
+```{r func_get_venues_in_country}
+
+get_venues_in_country <- function(country_code, verbose = TRUE) {
+  #' Get venues in a country
+  #' 
+  #' @description Get all venues from ticketmaster via it's API and convert the 
+  #' response to a data frame that contains a row for each venue.
+  #' 
+  #' @note This functions uses the global variables `apikey` and `url`. 
+  #' In order to make this function work properly, these have to be defined.
+  #' 
+  #' @param country_code character. The country code to be used as parameter for
+  #'  the API call
+  #' @param verbose boolean. Whether to print status messages to console
+  #'  (default = TRUE)
+  #' 
+  #' @return Data frame that contains the information on all venues in the 
+  #' country
+  
+  # define params for API calls (size parameter must be less than 500)
+  params <- list(apikey = apikey, countryCode = country_code, size = 499)
+  
+  # first API call to get number of pages
+  n_pages <- content(GET(url = url, query = params))$page$totalPages
+  
+  # save timestamp of when API call was completed
+  time_last_apicall <- Sys.time()
+  
+  # preallocate vector to store single page data frames in
+  single_page_dfs <- vector(mode = "list", length = n_pages)
+  
+  # print message
+  if (verbose) {
+    cat(
+      paste("Starting to retrieve venues in country", country_code,
+            "from", n_pages, "pages...\n")
+    )
+  }
+  
+  # loop through pages
+  for (page in 1:n_pages) {
+    
+    # add page number to params dictionary (API starts counting at 0)
+    params$page <- page - 1
+    
+    # make sure we do not more than 5 requests per second
+    time_since_last_apicall <- Sys.time() - time_last_apicall
+    Sys.sleep(max(0, 1/5 - time_since_last_apicall))
+    
+    # get venues list from API call response
+    venues <- content(GET(url = url, query = params))$`_embedded`$venues
+    
+    # update timestamp of when API call was completed
+    time_last_apicall <- Sys.time()
+    
+    # get data frame of all venues on the current page
+    # and add to single_page_dfs list
+    single_page_dfs[[page]] <- venues %>%
+      lapply(simplify_list) %>% 
+      list.stack()
+    
+    # print message (progress)
+    percent <- page / n_pages * 100
+    cat(sprintf('\rProgress: [%-50s] %d%%',
+                paste(rep('#', percent / 2), collapse = ''),
+                floor(percent)))
+    if (page == n_pages)
+      cat('\n')
+  }
+  
+  # stack all data frames in single_page_dfs vector
+  all_venues_df <- bind_rows(single_page_dfs)
+  
+  # convert longitude and latitude to numeric (character before)
+  all_venues_df <- all_venues_df %>%
+    mutate(across(c("longitude", "latitude"), as.numeric))
+  
+  # print message
+  if (verbose) {
+    cat(paste("Retrieved data for", nrow(all_venues_df), "venues.\n"))
+  }
+  
+  # final sleep in case a new request is sent directly after executing 
+  # this function
+  time_since_last_apicall = Sys.time() - time_last_apicall
+  Sys.sleep(max(0, 1/5 - time_since_last_apicall))
+  
+  return(all_venues_df)
+  
+}
+
+```
+
+```{r get_venues_in_DE}
+
+# call function for Germany (country_code='DE')
+venues_DE <- get_venues_in_country("DE")
+
+# show data frame (first 10 rows only)
+print_df(venues_DE)
+
+# print shape
+print(dim(venues_DE))
+
+```
+
 # Visualizing the extracted data
 
 <div class="task">
