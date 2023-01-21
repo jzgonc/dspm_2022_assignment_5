@@ -323,9 +323,78 @@ print(dim(venues_DE))
 10. Below, you can find code that produces a map of Germany. Add points to the map indicating the locations of the event venues across Germany.
 </div>
 
+```{r func_plot_venues}
+
+plot_venues <- function(venues_df, country, lon_lat_ranges = NULL) {
+  #' Plot venues in a country
+  #' 
+  #' @description Plot venues in a specific country as points on a map.
+  #' 
+  #' @param venues_df tibble. A data frame with the venue data
+  #' (longitude and latitude have to be  numeric)
+  #' 
+  #' @param country character. The name of the country, needed for retrieving the 
+  #' base map
+  #' @lon_lat_ranges list. A list that contains the ranges for longitude and 
+  #' latitude to clip the data, only used if not NULL 
+  #' (default = NULL)
+
+  # filter data for longitude and latitude ranges (only if provided)
+  if (!is.null(lon_lat_ranges)) {
+      venues_df <- venues_df %>% 
+      filter(
+        longitude >= lon_lat_ranges$longitude[1],
+        longitude <= lon_lat_ranges$longitude[2],
+        latitude >= lon_lat_ranges$latitude[1],
+        latitude <= lon_lat_ranges$latitude[2])
+  }
+    
+  # create plot
+  ggplot() +
+    # map
+    borders("world", country, colour = "black", fill = "grey90") +
+    # venues as points
+    geom_point(aes(x = venues_df$longitude, y = venues_df$latitude),
+               color = "darkblue", alpha = 0.5, size = 0.5) +
+    # remove ticks, labels, spines etc
+    theme_void() +
+    # map projection
+    coord_quickmap() +
+    # labels
+    labs(title = paste("Event locations across", country),
+         caption = "Source: ticketmaster.com") +
+    # theme adjustments
+    theme(title = element_text(size=8, face='bold'),
+          plot.caption = element_text(face = "italic"))
+
+}
+
+```
+
+```{r plot_venues_in_DE, dev='svglite'}
+
+# call plotting function without specifiying the extreme points
+plot_venues(venues_df = venues_DE, country = "Germany")
+
+```
+
 <div class="task">
 11. You will find that some coordinates lie way beyond the German borders and can be assumed to be faulty. Set coordinate values to `NA` where the value of `longitude` is outside the range (`5.866, 15.042`) or where the value of `latitude` is outside the range (`47.270, 55.059`) (these coordinate ranges have been derived from the extreme points of Germany as listed on Wikipedia (see [here](https://en.wikipedia.org/wiki/Geography_of_Germany#Extreme_points)). For extreme points of other countries, see [here](https://en.wikipedia.org/wiki/Lists_of_extreme_points#Sovereign_states)).
 </div>
+
+```{r plot_venues_in_DE_clipped, dev='svglite'}
+
+# call plotting function and pass extreme points
+plot_venues(
+  venues_df = venues_DE, 
+  country = "Germany",
+  lon_lat_ranges = list(
+    longitude = c(5.866, 15.042),
+    latitude = c(47.270, 55.059)
+  )
+)
+
+```
 
 # Event locations in other countries
 
