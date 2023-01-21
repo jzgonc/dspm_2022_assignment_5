@@ -77,7 +77,10 @@ This document is also available in [this GitHub repository](https://github.com/j
 ```{r libraries}
 
 # load libraries
-
+library(httr)
+library(tidyverse)
+library(rlist)
+library(kableExtra)
 
 ```
 
@@ -103,6 +106,39 @@ print_df <- function(df, n = 10, scrollbox = FALSE) {
 }
 
 ```
+
+```{r apikey}
+
+# get API key
+apikey <- readLines("ticketmaster_api_key.txt", warn = FALSE)
+
+```
+
+```{r url}
+
+# url for venues
+url <- "https://app.ticketmaster.com/discovery/v2/venues"
+
+```
+
+```{r first_apicall}
+
+# define params for API call
+params = list(apikey = apikey, countryCode = "DE")
+
+# get response from API and extract content
+venues_DE_first_page <- GET(url = url, query = params) %>% content()
+
+# show response
+venues_DE_first_page
+
+```
+
+The response of the API call is a nested list. On the first level there are three items:
+
+* `_embedded` contains the actual data we have requested. The value is a list itself. In this list, again, there is a list with all returned venues (each of which is a list, again)
+* `_links` contains the url that was used for the API call (excluding the apikey and the domain). In addition, it contains the urls for the first, next and last page.
+* `page` contains information about the returned page from the data source
 
 <div class="task">
 8. Extract the `name`, the `city`, the `postalCode` and `address`, as well as the `url` and the `longitude` and `latitude` of the `venues` to a data frame. This data frame should have the following structure:
