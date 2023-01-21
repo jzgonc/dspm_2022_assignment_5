@@ -155,6 +155,43 @@ The response of the API call is a nested list. On the first level there are thre
 ```
 </div>
 
+```{r func_simplify_list}
+
+simplify_list <- function(l) {
+  #' Simplify list
+  #' 
+  #' @description This function simplifies the list returned from the request
+  #' by extracting relevant information for a single venue.
+  #' 
+  #' @param l list. The list that contains all returned information on a single
+  #' venue
+  #' 
+  #' @return The simplified list with the relevant information
+  
+  l_simplified = list(
+    name = l$name,
+    city = l$city$name,
+    postalCode = l$postalCode,
+    address = l$address$line1,
+    url = l$url,
+    longitude = l$location$longitude,
+    latitude = l$location$latitude
+  )
+  
+  return(l_simplified)
+  
+}
+
+```
+
+```{r first_page_df}
+
+# apply function to each venue and stack in a data frame
+lapply(venues_DE_first_page[["_embedded"]][["venues"]], simplify_list) %>% 
+  list.stack() %>% 
+  print_df()
+
+```
 
 # Interacting with the API - advanced
 
