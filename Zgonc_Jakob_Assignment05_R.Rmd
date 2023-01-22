@@ -371,7 +371,7 @@ plot_venues <- function(venues_df, country, lon_lat_ranges = NULL) {
 
 ```
 
-```{r plot_venues_in_DE, dev='svglite'}
+```{r plot_venues_in_DE, dev='svglite', out.width="100%"}
 
 # call plotting function without specifiying the extreme points
 plot_venues(venues_df = venues_DE, country = "Germany")
@@ -382,7 +382,7 @@ plot_venues(venues_df = venues_DE, country = "Germany")
 11. You will find that some coordinates lie way beyond the German borders and can be assumed to be faulty. Set coordinate values to `NA` where the value of `longitude` is outside the range (`5.866, 15.042`) or where the value of `latitude` is outside the range (`47.270, 55.059`) (these coordinate ranges have been derived from the extreme points of Germany as listed on Wikipedia (see [here](https://en.wikipedia.org/wiki/Geography_of_Germany#Extreme_points)). For extreme points of other countries, see [here](https://en.wikipedia.org/wiki/Lists_of_extreme_points#Sovereign_states)).
 </div>
 
-```{r plot_venues_in_DE_clipped, dev='svglite'}
+```{r plot_venues_in_DE_clipped, dev='svglite', out.width="100%"}
 
 # call plotting function and pass extreme points
 plot_venues(
@@ -415,7 +415,7 @@ print(dim(venues_NL))
 
 ```
 
-```{r plot_venues_in_NL_clipped, dev='svglite'}
+```{r plot_venues_in_NL_clipped, dev='svglite', out.width="100%"}
 
 # call plotting function and pass extreme points
 plot_venues(
