@@ -402,6 +402,32 @@ plot_venues(
 12. Repeat exercises (9)–(11) for another European country of your choice. (Hint: Clean code pays off! If you have coded the exercises efficiently, only very few adaptions need to be made.)
 </div>
 
+```{r get_venues_in_NL}
+
+# call function for Germany (country_code='DE')
+venues_NL <- get_venues_in_country("NL")
+
+# show data frame (first 10 rows only)
+print_df(venues_NL)
+
+# print shape
+print(dim(venues_NL))
+
+```
+
+```{r plot_venues_in_NL_clipped, dev='svglite'}
+
+# call plotting function and pass extreme points
+plot_venues(
+  venues_df = venues_NL, 
+  country = "Netherlands",
+  lon_lat_ranges = list(
+    longitude = c(3.355, 7.223333333333334),
+    latitude = c(50.750166666666665, 53.553)
+  )
+)
+
+```
 
 
 <br>
