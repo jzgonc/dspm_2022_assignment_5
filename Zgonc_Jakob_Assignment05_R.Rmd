@@ -124,7 +124,7 @@ url <- "https://app.ticketmaster.com/discovery/v2/venues"
 ```{r first_apicall}
 
 # define params for API call
-params = list(apikey = apikey, countryCode = "DE")
+params <- list(apikey = apikey, countryCode = "DE")
 
 # get response from API and extract content
 venues_DE_first_page <- GET(url = url, query = params) %>% content()
@@ -168,7 +168,7 @@ simplify_list <- function(l) {
   #' 
   #' @return The simplified list with the relevant information
   
-  l_simplified = list(
+  l_simplified <- list(
     name = l$name,
     city = l$city$name,
     postalCode = l$postalCode,
@@ -295,7 +295,7 @@ get_venues_in_country <- function(country_code, verbose = TRUE) {
   
   # final sleep in case a new request is sent directly after executing 
   # this function
-  time_since_last_apicall = Sys.time() - time_last_apicall
+  time_since_last_apicall <- Sys.time() - time_last_apicall
   Sys.sleep(max(0, 1/5 - time_since_last_apicall))
   
   return(all_venues_df)
