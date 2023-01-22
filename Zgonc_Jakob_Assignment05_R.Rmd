@@ -249,8 +249,8 @@ get_venues_in_country <- function(country_code, verbose = TRUE) {
   #' @return Data frame that contains the information on all venues in the 
   #' country
   
-  # define params for API calls (size parameter must be less than 500)
-  params <- list(apikey = apikey, countryCode = country_code, size = 499)
+  # define params for API calls (size parameter can be 500 max)
+  params <- list(apikey = apikey, countryCode = country_code, size = 500)
   
   # first API call to get number of pages
   n_pages <- content(GET(url = url, query = params))$page$totalPages
