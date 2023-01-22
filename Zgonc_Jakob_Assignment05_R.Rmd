@@ -57,6 +57,25 @@ body .main-container {
 
 ```
 
+```{r scrollbar_code_output, include=FALSE}
+
+# add chunk of option max.height that adds a scrollbox if output is larger than
+# the specified value
+# code from https://bookdown.org/yihui/rmarkdown-cookbook/hook-scroll.html
+options(width = 60)
+local({
+  hook_output <- knitr::knit_hooks$get('output')
+  knitr::knit_hooks$set(output = function(x, options) {
+    if (!is.null(options$max.height)) options$attr.output <- c(
+      options$attr.output,
+      sprintf('style="max-height: %s;"', options$max.height)
+    )
+    hook_output(x, options)
+  })
+})
+
+```
+
 ***
 
 <br>
@@ -121,7 +140,7 @@ url <- "https://app.ticketmaster.com/discovery/v2/venues"
 
 ```
 
-```{r first_apicall}
+```{r first_apicall, max.height="500px"}
 
 # define params for API call
 params <- list(apikey = apikey, countryCode = "DE")
