@@ -243,7 +243,7 @@ get_venues_in_country <- function(country_code, verbose = TRUE) {
   #' 
   #' @param country_code character. The country code to be used as parameter for
   #'  the API call
-  #' @param verbose boolean. Whether to print status messages to console
+  #' @param verbose logical. Whether to print status messages to console
   #'  (default = TRUE)
   #' 
   #' @return Data frame that contains the information on all venues in the 
@@ -363,20 +363,50 @@ plot_venues <- function(
   #' 
   #' @param country character. The name of the country, needed for retrieving the 
   #' base map
-  #' @lon_lat_ranges list. A list that contains the ranges for longitude and 
+  #' @param lon_lat_ranges list. A list that contains the ranges for longitude and 
   #' latitude to clip the data, only used if not NULL 
   #' (default = NULL)
+  #' @param verbose logical. Whether it should be printed how many venues are
+  #' not plotted for different reasons
+  #' (default = TRUE)
+
+    # print number of missing values
+    if (verbose) {
+      
+      # compute number of missing values
+      n_NAs <- venues_df %>% 
+        filter(is.na(longitude) | is.na(latitude)) %>% 
+        nrow()
+      
+      # print message
+      print(paste(n_NAs, "venues are not plotted due to missing coordinates."))
+      
+    }
 
   # filter data for longitude and latitude ranges (only if provided)
   if (!is.null(lon_lat_ranges)) {
-      venues_df <- venues_df %>% 
+    
+    # for print message original number of venues is needed
+    if (verbose) {
+        n_venues_orig <- nrow(venues_df)
+    }
+
+    # filter venues by coordinate ranges
+    venues_df <- venues_df %>% 
       filter(
         longitude >= lon_lat_ranges$longitude[1],
         longitude <= lon_lat_ranges$longitude[2],
         latitude >= lon_lat_ranges$latitude[1],
         latitude <= lon_lat_ranges$latitude[2])
+
+    # print message
+    if (verbose) {
+      print(paste(
+        n_venues_orig - nrow(venues_df) - n_NAs, 
+        "venues are not plotted due to faulty coordinates."))
+    }
   }
-    
+  
   # create plot
   ggplot() +
     # map
