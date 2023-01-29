@@ -467,7 +467,7 @@ plot_venues(
 venues_NL <- get_venues_in_country("NL")
 
 # show data frame (first 10 rows only)
-print_df(venues_NL)
+print_df(venues_NL, scrollbox = TRUE)
 
 # print shape
 print(dim(venues_NL))
