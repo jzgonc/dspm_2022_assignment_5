@@ -143,7 +143,7 @@ url <- "https://app.ticketmaster.com/discovery/v2/venues"
 ```{r first_apicall, max.height="500px"}
 
 # define params for API call
-params <- list(apikey = apikey, countryCode = "DE")
+params <- list(apikey = apikey, countryCode = "DE", locale = "*")
 
 # get response from API and extract content
 venues_DE_first_page <- GET(url = url, query = params) %>% content()
@@ -208,7 +208,7 @@ simplify_list <- function(l) {
 # apply function to each venue and stack in a data frame
 lapply(venues_DE_first_page[["_embedded"]][["venues"]], simplify_list) %>% 
   list.stack() %>% 
-  print_df()
+  print_df(n = Inf, scrollbox = TRUE)
 
 ```
 
@@ -250,7 +250,12 @@ get_venues_in_country <- function(country_code, verbose = TRUE) {
   #' country
   
   # define params for API calls (size parameter can be 500 max)
-  params <- list(apikey = apikey, countryCode = country_code, size = 500)
+  params <- list(
+    apikey = apikey, 
+    countryCode = country_code, 
+    locale = "*",
+    size = 500
+  )
   
   # first API call to get number of pages
   n_pages <- content(GET(url = url, query = params))$page$totalPages
@@ -344,7 +349,11 @@ print(dim(venues_DE))
 
 ```{r func_plot_venues}
 
-plot_venues <- function(venues_df, country, lon_lat_ranges = NULL) {
+plot_venues <- function(
+    venues_df, 
+    country, 
+    lon_lat_ranges = NULL, 
+    verbose = TRUE) {
   #' Plot venues in a country
   #' 
   #' @description Plot venues in a specific country as points on a map.
@@ -374,7 +383,7 @@ plot_venues <- function(venues_df, country, lon_lat_ranges = NULL) {
     borders("world", country, colour = "black", fill = "grey90") +
     # venues as points
     geom_point(aes(x = venues_df$longitude, y = venues_df$latitude),
-               color = "darkblue", alpha = 0.5, size = 0.5) +
+               color = "darkblue", alpha = 0.3, size = 0.3) +
     # remove ticks, labels, spines etc
     theme_void() +
     # map projection
