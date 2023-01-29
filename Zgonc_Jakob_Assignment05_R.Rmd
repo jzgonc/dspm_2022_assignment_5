@@ -423,6 +423,7 @@ plot_venues <- function(
          caption = "Source: ticketmaster.com") +
     # theme adjustments
     theme(title = element_text(size=8, face='bold'),
+          plot.title = element_text(hjust = 0.5),
           plot.caption = element_text(face = "italic"))
 
 }
@@ -431,7 +432,7 @@ plot_venues <- function(
 
 ```{r plot_venues_in_DE, dev='svglite', out.width="100%"}
 
-# call plotting function without specifiying the extreme points
+# call plotting function without specifying the extreme points
 plot_venues(venues_df = venues_DE, country = "Germany")
 
 ```
