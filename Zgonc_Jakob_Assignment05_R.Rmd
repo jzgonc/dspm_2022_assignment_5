@@ -2,7 +2,7 @@
 title: "Assignment V: GitHub and the ticketmaster.com API (R)"
 subtitle: "Data Science Project Management (DS400) | Winter Term 2022/23"
 author: "Submitted by Jakob Zgonc (6293178)"
-date: "Submitted on `r format(Sys.time(), '%d.%m.%Y')`"
+date: "Submitted on 30.01.2023"
 output:
   bookdown::html_document2:
     toc: yes
