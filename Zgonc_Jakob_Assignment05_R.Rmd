@@ -145,7 +145,7 @@ url <- "https://app.ticketmaster.com/discovery/v2/venues"
 # define params for API call
 params <- list(apikey = apikey, countryCode = "DE", locale = "*")
 
-# get response from API and extract content
+# get response from API call and extract content
 venues_DE_first_page <- GET(url = url, query = params) %>% content()
 
 # show response
@@ -235,7 +235,7 @@ lapply(venues_DE_first_page[["_embedded"]][["venues"]], simplify_list) %>%
 get_venues_in_country <- function(country_code, verbose = TRUE) {
   #' Get venues in a country
   #' 
-  #' @description Get all venues from ticketmaster via it's API and convert the 
+  #' @description Get all venues from ticketmaster via its API and convert the 
   #' response to a data frame that contains a row for each venue.
   #' 
   #' @note This functions uses the global variables `apikey` and `url`. 
@@ -260,7 +260,7 @@ get_venues_in_country <- function(country_code, verbose = TRUE) {
   # first API call to get number of pages
   n_pages <- content(GET(url = url, query = params))$page$totalPages
   
-  # save timestamp of when API call was completed
+  # save time stamp of when API call was completed
   time_last_apicall <- Sys.time()
   
   # preallocate vector to store single page data frames in
@@ -287,7 +287,7 @@ get_venues_in_country <- function(country_code, verbose = TRUE) {
     # get venues list from API call response
     venues <- content(GET(url = url, query = params))$`_embedded`$venues
     
-    # update timestamp of when API call was completed
+    # update time stamp of when API call was completed
     time_last_apicall <- Sys.time()
     
     # get data frame of all venues on the current page
@@ -330,7 +330,7 @@ get_venues_in_country <- function(country_code, verbose = TRUE) {
 
 ```{r get_venues_in_DE}
 
-# call function for Germany (country_code='DE')
+# call function for Germany (country_code = "DE")
 venues_DE <- get_venues_in_country("DE")
 
 # show data frame (first 10 rows only)
@@ -360,7 +360,6 @@ plot_venues <- function(
   #' 
   #' @param venues_df tibble. A data frame with the venue data
   #' (longitude and latitude have to be  numeric)
-  #' 
   #' @param country character. The name of the country, needed for retrieving the 
   #' base map
   #' @param lon_lat_ranges list. A list that contains the ranges for longitude and 
@@ -397,7 +396,8 @@ plot_venues <- function(
         longitude >= lon_lat_ranges$longitude[1],
         longitude <= lon_lat_ranges$longitude[2],
         latitude >= lon_lat_ranges$latitude[1],
-        latitude <= lon_lat_ranges$latitude[2])
+        latitude <= lon_lat_ranges$latitude[2]
+      )
 
     # print message
     if (verbose) {
@@ -463,7 +463,7 @@ plot_venues(
 
 ```{r get_venues_in_NL}
 
-# call function for Germany (country_code='DE')
+# call function to get venue data for the Netherlands (country_code = "NL")
 venues_NL <- get_venues_in_country("NL")
 
 # show data frame (first 10 rows only)
@@ -476,7 +476,7 @@ print(dim(venues_NL))
 
 ```{r plot_venues_in_NL_clipped, dev='svglite', out.width="100%"}
 
-# call plotting function and pass extreme points
+# plot venues in the Netherlands
 plot_venues(
   venues_df = venues_NL, 
   country = "Netherlands",
